@@ -34,7 +34,7 @@ public class StatsController {
     @GetMapping("/stats")
     public ResponseEntity<List<ViewStatsOutputDto>> getStats(@RequestParam("start") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime start,
                                                              @RequestParam("end") @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss") LocalDateTime end,
-                                                             @RequestParam("uris") List<String> uris,
+                                                             @RequestParam(value = "uris", required = false) List<String> uris,
                                                              @RequestParam(value = "unique", defaultValue = "false") Boolean unique) {
         log.info("Получен запрос GET /stats");
         Validator.validateTime(start, end);
