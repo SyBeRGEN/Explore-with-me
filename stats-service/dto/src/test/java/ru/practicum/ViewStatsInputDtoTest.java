@@ -25,12 +25,12 @@ class ViewStatsInputDtoTest {
         LocalDateTime end = LocalDate.of(1970, 1, 1).atStartOfDay();
         ViewStatsInputDto actualViewStatsInputDto = new ViewStatsInputDto(start, end, new ArrayList<>(), true);
 
-        LocalDateTime expectedEnd = actualViewStatsInputDto.end;
+        LocalDateTime expectedEnd = actualViewStatsInputDto.getEnd();
         assertSame(expectedEnd, actualViewStatsInputDto.getEnd());
-        LocalDateTime expectedStart = actualViewStatsInputDto.start;
+        LocalDateTime expectedStart = actualViewStatsInputDto.getStart();
         assertSame(expectedStart, actualViewStatsInputDto.getStart());
         assertTrue(actualViewStatsInputDto.getUnique());
-        List<String> expectedUris = actualViewStatsInputDto.uris;
+        List<String> expectedUris = actualViewStatsInputDto.getUris();
         assertSame(expectedUris, actualViewStatsInputDto.getUris());
     }
 }

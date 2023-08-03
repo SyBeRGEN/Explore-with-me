@@ -15,7 +15,9 @@ import java.util.Map;
 
 @Service
 public class StatsClient {
-    // В ТЗ построить модуль клиента сервиса статистики на RestTeplate
+    /**
+     * В ТЗ построить модуль клиента сервиса статистики на RestTemplate
+     */
     private final RestTemplate rest;
 
     public StatsClient(@Value("${stats-service.url}") String serverUrl, RestTemplateBuilder builder) {
@@ -25,8 +27,10 @@ public class StatsClient {
                 .build();
     }
 
-    // Принимаем ResponseEntity, проверяем код-статус, если начинает с 2 (успешный код), метод возвращает исходный ответ,
-    // в противном случае, он создает новый ответ с тем же статус-кодом и телом, если оно присутствует
+    /**
+     * Принимаем ResponseEntity, проверяем код-статус, если начинает с 2 (успешный код), метод возвращает исходный ответ,
+     * в противном случае, он создает новый ответ с тем же статус-кодом и телом, если оно присутствует
+     */
     private static ResponseEntity<Object> prepareResponse(ResponseEntity<Object> response) {
         if (response.getStatusCode().is2xxSuccessful()) {
             return response;
@@ -41,10 +45,12 @@ public class StatsClient {
         return responseBuilder.build();
     }
 
-    // Класс предоставляет несколько защищенных методов для выполнения GET- и POST-запросов:
-    // Метод get выполняет GET-запрос с указанным path и опциональными параметрами запроса (parameters).
-    // Метод post выполняет POST-запрос с указанным path, опциональными параметрами запроса (parameters) и телом запроса (body).
-    // Эти методы внутренне вызывают метод makeAndSendRequest для создания HTTP-запроса и его отправки с использованием RestTemplate.
+    /**
+     * Класс предоставляет несколько защищенных методов для выполнения GET- и POST-запросов:
+     * Метод get выполняет GET-запрос с указанным path и опциональными параметрами запроса (parameters).
+     * Метод post выполняет POST-запрос с указанным path, опциональными параметрами запроса (parameters) и телом запроса (body).
+     * Эти методы внутренне вызывают метод makeAndSendRequest для создания HTTP-запроса и его отправки с использованием RestTemplate.
+     */
     protected ResponseEntity<Object> get(String path, @Nullable Map<String, Object> parameters) {
         return makeAndSendRequest(HttpMethod.GET, path, parameters, null);
     }
@@ -57,10 +63,12 @@ public class StatsClient {
         return makeAndSendRequest(HttpMethod.POST, path, parameters, body);
     }
 
-    // Метод makeAndSendRequest является приватным обобщенным методом, который обрабатывает создание и отправку фактического HTTP-запроса.
-    // Он принимает HTTP-метод (method), путь запроса (path), опциональные параметры запроса (parameters) и опциональное тело запроса (body).
-    // Метод создает HttpEntity с телом запроса и заголовками по умолчанию, затем использует RestTemplate для отправки запроса и получения ResponseEntity.
-    // Если возникает исключение (например, HttpStatusCodeException), оно обрабатывается, и возвращается новый ResponseEntity с соответствующим статус-кодом и ошибочным телом.
+    /**
+     * Метод makeAndSendRequest является приватным обобщенным методом, который обрабатывает создание и отправку фактического HTTP-запроса.
+     * Он принимает HTTP-метод (method), путь запроса (path), опциональные параметры запроса (parameters) и опциональное тело запроса (body).
+     * Метод создает HttpEntity с телом запроса и заголовками по умолчанию, затем использует RestTemplate для отправки запроса и получения ResponseEntity.
+     * Если возникает исключение (например, HttpStatusCodeException), оно обрабатывается, и возвращается новый ResponseEntity с соответствующим статус-кодом и ошибочным телом.
+     */
     private <T> ResponseEntity<Object> makeAndSendRequest(HttpMethod method, String path,
                                                           @Nullable Map<String, Object> parameters, @Nullable T body) {
         HttpEntity<T> requestEntity = new HttpEntity<>(body, defaultHeaders());
@@ -78,8 +86,10 @@ public class StatsClient {
         return prepareResponse(serverResponse);
     }
 
-    // Метод defaultHeaders является приватным вспомогательным методом, который создает и возвращает HttpHeaders
-    // со значением типа содержимого application/json и принимаемым типом медиа application/json.
+    /**
+     * Метод defaultHeaders является приватным вспомогательным методом, который создает и возвращает HttpHeaders
+     * со значением типа содержимого application/json и принимаемым типом медиа application/json.
+     */
     private HttpHeaders defaultHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -87,12 +97,14 @@ public class StatsClient {
         return headers;
     }
 
-    // Класс предоставляет два публичных метода:
-    // Метод getStats выполняет GET-запрос для получения статистики с сервера. Он принимает параметры, такие как start (начальная дата),
-    // end (конечная дата), uris (список URI) и unique (логический флаг). Метод формирует URL запроса и параметры запроса с помощью Map
-    // и вызывает метод get для выполнения фактического запроса.
-    // Метод save выполняет POST-запрос для сохранения объекта EndpointHitDto на сервере. Он принимает объект EndpointHitDto
-    // в качестве параметра и вызывает метод post с путем запроса и объектом в качестве тела запроса.
+    /**
+     * Класс предоставляет два публичных метода:
+     * Метод getStats выполняет GET-запрос для получения статистики с сервера. Он принимает параметры, такие как start (начальная дата),
+     * end (конечная дата), uris (список URI) и unique (логический флаг). Метод формирует URL запроса и параметры запроса с помощью Map
+     * и вызывает метод get для выполнения фактического запроса.
+     * Метод save выполняет POST-запрос для сохранения объекта EndpointHitDto на сервере. Он принимает объект EndpointHitDto
+     * в качестве параметра и вызывает метод post с путем запроса и объектом в качестве тела запроса.
+     */
 
     public ResponseEntity<Object> getStats(String start, String end, List<String> uris, Boolean unique) {
         Map<String, Object> parameters = Map.of(
