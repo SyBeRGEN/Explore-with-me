@@ -1,62 +1,71 @@
 package ru.practicum.controller;
 
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import ru.practicum.EndpointHitDto;
-import ru.practicum.ViewStatsOutputDto;
-import ru.practicum.model.EndpointHit;
-import ru.practicum.repository.EndpointHitRepository;
-import ru.practicum.repository.ViewStatsRepository;
-import ru.practicum.service.StatsServiceImpl;
+import static org.mockito.Mockito.when;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import ru.practicum.EndpointHitDto;
+import ru.practicum.service.StatsService;
 
+@ContextConfiguration(classes = {StatsController.class})
+@ExtendWith(SpringExtension.class)
 class StatsControllerTest {
+    @Autowired
+    private StatsController statsController;
+
+    @MockBean
+    private StatsService statsService;
+
+    /**
+     * Method under test: {@link StatsController#getStats(LocalDateTime, LocalDateTime, List, Boolean)}
+     */
     @Test
-    void testSaveHit() {
-        EndpointHit endpointHit = new EndpointHit();
-        endpointHit.setApp("App");
-        endpointHit.setId(1L);
-        endpointHit.setIp("127.0.0.1");
-        endpointHit.setTimestamp(LocalDate.of(1970, 1, 1).atStartOfDay());
-        endpointHit.setUri("Uri");
-        EndpointHitRepository endpointHitRepository = mock(EndpointHitRepository.class);
-        when(endpointHitRepository.save(Mockito.<EndpointHit>any())).thenReturn(endpointHit);
-        StatsController statsController = new StatsController(
-                new StatsServiceImpl(endpointHitRepository, mock(ViewStatsRepository.class)));
-        ResponseEntity<String> actualSaveHitResult = statsController.saveHit(new EndpointHitDto());
-        assertEquals("Успешно сохранено", actualSaveHitResult.getBody());
-        assertEquals(HttpStatus.CREATED, actualSaveHitResult.getStatusCode());
-        assertTrue(actualSaveHitResult.getHeaders().isEmpty());
-        verify(endpointHitRepository).save(Mockito.<EndpointHit>any());
+    void testGetStats() throws Exception {
+        MockHttpServletRequestBuilder getResult = MockMvcRequestBuilders.get("/stats");
+        MockHttpServletRequestBuilder paramResult = getResult.param("end", String.valueOf((Object) null));
+        MockHttpServletRequestBuilder paramResult2 = paramResult.param("start", String.valueOf((Object) null));
+        MockHttpServletRequestBuilder requestBuilder = paramResult2.param("unique", String.valueOf(true));
+        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(statsController)
+                .build()
+                .perform(requestBuilder);
+        actualPerformResult.andExpect(MockMvcResultMatchers.status().is(400));
     }
 
+    /**
+     * Method under test: {@link StatsController#saveHit(EndpointHitDto)}
+     */
     @Test
-    void testGetStats() {
-        ViewStatsRepository viewStatsRepository = mock(ViewStatsRepository.class);
-        when(viewStatsRepository.getUniqueViewStats(Mockito.<LocalDateTime>any(), Mockito.<LocalDateTime>any(),
-                Mockito.<List<String>>any(), Mockito.<PageRequest>any())).thenReturn(new ArrayList<>());
-        StatsController statsController = new StatsController(
-                new StatsServiceImpl(mock(EndpointHitRepository.class), viewStatsRepository));
-        LocalDateTime start = LocalDate.of(1970, 1, 1).atStartOfDay();
-        LocalDateTime end = LocalDate.of(1970, 1, 1).atStartOfDay();
-        ArrayList<String> uris = new ArrayList<>();
-        ResponseEntity<List<ViewStatsOutputDto>> actualStats = statsController.getStats(start, end, uris, true);
-        assertEquals(uris, actualStats.getBody());
-        assertEquals(HttpStatus.OK, actualStats.getStatusCode());
-        assertTrue(actualStats.getHeaders().isEmpty());
-        verify(viewStatsRepository).getUniqueViewStats(Mockito.<LocalDateTime>any(), Mockito.<LocalDateTime>any(),
-                Mockito.<List<String>>any(), Mockito.<PageRequest>any());
+    void testSaveHit() throws Exception {
+        when(statsService.saveHit(Mockito.<EndpointHitDto>any())).thenReturn(new EndpointHitDto());
+        MockHttpServletRequestBuilder contentTypeResult = MockMvcRequestBuilders.post("/hit")
+                .contentType(MediaType.APPLICATION_JSON);
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        MockHttpServletRequestBuilder requestBuilder = contentTypeResult
+                .content(objectMapper.writeValueAsString(new EndpointHitDto()));
+        ResultActions actualPerformResult = MockMvcBuilders.standaloneSetup(statsController)
+                .build()
+                .perform(requestBuilder);
+        actualPerformResult.andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andExpect(MockMvcResultMatchers.content()
+                        .string("{\"id\":null,\"app\":null,\"uri\":null,\"ip\":null,\"timestamp\":null}"));
     }
 }
 

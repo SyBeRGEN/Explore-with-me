@@ -16,6 +16,7 @@ services:
     image: postgres:14-alpine
     container_name: stats-db-container
     volumes:
+      - ./stats-service/server/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
       - /var/lib/postgresql/data/
     ports:
       - "6541:5432"
@@ -28,9 +29,10 @@ services:
     image: postgres:14-alpine
     container_name: main-db-container
     volumes:
+      - ./main-service/src/main/resources/schema.sql:/docker-entrypoint-initdb.d/schema.sql
       - /var/lib/postgresql/data/
     ports:
-      - "6542:5433"
+      - "6542:5432"
     environment:
       - POSTGRES_DB=main-db
       - POSTGRES_USER=main

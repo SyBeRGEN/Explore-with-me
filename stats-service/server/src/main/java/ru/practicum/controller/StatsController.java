@@ -23,12 +23,10 @@ public class StatsController {
     private final StatsService service;
 
     @PostMapping("/hit")
-    public ResponseEntity<String> saveHit(@RequestBody EndpointHitDto endpointHitDto) {
+    public ResponseEntity<EndpointHitDto> saveHit(@RequestBody EndpointHitDto endpointHitDto) {
         log.info("Получен запрос POST /hit");
 
-        service.saveHit(endpointHitDto);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body("Успешно сохранено");
+        return new ResponseEntity<>(service.saveHit(endpointHitDto), HttpStatus.CREATED);
     }
 
     @GetMapping("/stats")

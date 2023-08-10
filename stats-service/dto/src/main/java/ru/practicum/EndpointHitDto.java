@@ -19,4 +19,15 @@ public class EndpointHitDto {
     private String ip; // IP-адрес пользователя, осуществившего запрос, например 192.163.0.1
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime timestamp; // Дата и время, когда был совершен запрос к эндпоинту (в формате "yyyy-MM-dd HH:mm:ss"), например 2022-09-06 11:00:23
+
+    @Override
+    public String toString() {
+        return "EndpointHitDto{" +
+                "id=" + id +
+                ", app='" + app + '\'' +
+                ", uri='" + uri + '\'' +
+                ", ip='" + ip + '\'' +
+                ", timestamp=" + timestamp +
+                '}';
+    }
 }
