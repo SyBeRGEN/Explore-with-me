@@ -72,7 +72,7 @@ public class Validator {
     }
 
     public static void validateEvents(List<Long> categories) {
-        if (categories.contains(0L)) {
+        if (categories != null && categories.contains(0L)) {
             throw new RequiredParamsException("Не существует категории с Id = 0");
         }
     }
