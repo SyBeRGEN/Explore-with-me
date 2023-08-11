@@ -20,4 +20,14 @@ public class ViewStatsInputDto {
     private LocalDateTime end; // Дата и время конца диапазона за который нужно выгрузить статистику (в формате "yyyy-MM-dd HH:mm:ss")
     private List<String> uris; // Список uri для которых нужно выгрузить статистику
     private Boolean unique; // Нужно ли учитывать только уникальные посещения (только с уникальным ip). Значение по-умолчанию : false
+
+    @Override
+    public String toString() {
+        return "ViewStatsInputDto{" +
+                "start=" + start +
+                ", end=" + end +
+                ", uris=" + uris +
+                ", unique=" + unique +
+                '}';
+    }
 }
