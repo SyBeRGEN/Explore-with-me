@@ -1341,9 +1341,7 @@
 							"            },\r",
 							"            body: {\r",
 							"                mode: 'raw',\r",
-							"                raw: JSON.stringify({\r",
-							"                    name: randomName\r",
-							"                })\r",
+							"                raw: JSON.stringify({})\r",
 							"            }\r",
 							"        });\r",
 							"    });\r",
@@ -1356,7 +1354,7 @@
 							"        await createEvent();\r",
 							"        await patchEvent();\r",
 							"        await createComment();\r",
-							"        await deleteComment();\r",
+							"        deleteComment();\r",
 							"    } catch (error) {\r",
 							"        console.error(error);\r",
 							"    }\r",
@@ -1373,7 +1371,7 @@
 							"            clearInterval(interval);\r",
 							"        }\r",
 							"    },  \r",
-							"    100 \r",
+							"    100\r",
 							");"
 						],
 						"type": "text/javascript"
