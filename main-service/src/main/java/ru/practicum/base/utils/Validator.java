@@ -1,6 +1,7 @@
 package ru.practicum.base.utils;
 
 import ru.practicum.base.dto.category.NewCategoryDto;
+import ru.practicum.base.dto.comments.CommentDto;
 import ru.practicum.base.dto.compilation.NewCompilationDto;
 import ru.practicum.base.dto.compilation.UpdateCompilationRequest;
 import ru.practicum.base.dto.event.NewEventDto;
@@ -8,6 +9,7 @@ import ru.practicum.base.dto.event.UpdateEventSuperRequest;
 import ru.practicum.base.dto.user.NewUserRequest;
 import ru.practicum.base.exceptions.BadTimeException;
 import ru.practicum.base.exceptions.RequiredParamsException;
+import ru.practicum.base.exceptions.InvalidTimeException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -132,6 +134,18 @@ public class Validator {
         }
         if (dto.getTitle().length() > 50) {
             throw new RequiredParamsException("Заголовок должно быть не более 50 символов");
+        }
+    }
+
+    public static void validateUpdateAndCreateComment(CommentDto dto) {
+        if (dto.getText().length() < 2 || dto.getText().length() > 250) {
+            throw new RequiredParamsException("Текст должен быть не менее 2 и не более 250 символов");
+        }
+    }
+
+    public static void validateTime(LocalDateTime start, LocalDateTime end) {
+        if (start.isAfter(end)) {
+            throw new InvalidTimeException("Время начала не может быть позднее времени окончания!");
         }
     }
 }
